@@ -26,3 +26,5 @@ log/
 .idea/
 
 .src/.env
+
+./out/
