@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: user.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: user.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const express = require("express");
+// https://github.com/validatorjs/validator.js#validators
+const { body, check, validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const auth = require("../middleware/auth");
+const router = express.Router();
+
+const User = require("../model/User");
+
+// jsdoc
+/**
+ * @method - POST
+ * @param - /signup
+ * @description - User SignUp &lt;br>
+ * &lt;br> username validation: must exist
+ * &lt;br> email validation: min 6 chars, min 1 uppercase letter, min 1 number
+*/
+
+/*
+  // function must include next, otherwise middleware chain is stopped
+  const fcn1 = function (req, res, next) {
+    ...
+    next();
+  }
+  app.use('/', [fcn1, fcn2, fcn3], (req, res) => {
+    ...
+  });
+*/
+router.post(
+  "/signup",
+  [
+    check("username", "Please enter a valid username")
+      .not()  // negates result of next validator
+      .isEmpty(),
+    check("email", "Please enter a valid email")
+      .isEmail()
+      .normalizeEmail(),
+    check("password", "Please enter a valid password")
+      .isLength({
+        min: 6
+      }).withMessage('must be at least 6 chars long').matches(/\d/).withMessage('must contain a number').matches(/[A-Z]/).withMessage('must contain an uppercase letter'),
+    check("passwordConfirm", "passwords don't match")
+      .exists()
+      .custom((value, { req }) => value === req.body.password)
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    console.log('errors', errors);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        errors: errors.array()
+      });
+    }
+
+    console.log('req body', req.body);
+
+    const { username, email, password } = req.body;
+
+    console.log('inputs:', username, email, password );
+
+    try {
+      let user = await User.findOne({ email });
+      if (user) {
+        return res.status(400).json({
+          msg: "User already exists"
+        });
+      }
+
+      user = new User({
+        username,
+        email,
+        password
+      });
+
+      console.log('new user created: ', user);
+
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt)
+
+      console.log('salt??', salt);
+      console.log('password hash', user.password);
+
+      await user.save();
+
+      const payload = {
+        user: {
+          id: user.id
+        }
+      };
+
+      jwt.sign(
+        payload,
+        "randomString", {
+          expiresIn: 10000
+        },
+        (err, token) => {
+          if (err) throw err;
+          res.status(200).json({ token });
+        }
+      ); // jwt.sign()
+
+    } catch(err) {
+      console.log(err.message);
+      res.status(500).send("Error in saving");
+    }  // try/catch
+  } // async cb(req, res)
+); // router.post()
+
+
+/**
+ * @method - POST
+ * @param - /login
+ * @description - User Login
+*/
+
+router.post(
+  "/login",
+  [
+    check("email", "Please enter a valid email").isEmail(),
+    check("password", "Please enter a valid password").isLength({
+      min: 6
+    })
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        errors: errors.array()
+      });
+    }
+
+    const { email, password } = req.body;
+
+    try {
+      let user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(400).json({
+          message: "User not exist"
+        });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({
+          message: "Incorrect password!"
+        });
+      }
+
+      const payload = {
+        user: {
+          id: user.id
+        }
+      };
+
+      jwt.sign(
+        payload,
+        "secret",
+        {
+          expiresIn: 3600
+        },
+        (err, token) => {
+          if (err) throw err;
+          res.status(200).json({
+            token
+          });
+        }
+      ); // jwt.sign()
+    } catch (e) {
+      console.error(e);
+      res.status(500).json({
+        message: "Server error"
+      });
+    } // try/catch
+  } // async cb()
+); // router.post()
+
+
+/**
+ * @method - GET
+ * @description - Get LoggedIn User
+ * @param - /user/me
+*/
+
+router.get("/me", auth, async (req, res) => {
+  try {
+    // request.user is getting fetched from Middleware after token authentication
+    const user = await User.findById(req.user.id);
+    res.json(user);
+  } catch(e) {
+    res.send({
+      message: "Error in fetching user"
+    });
+  }  // try/catch
+}); // router.get()
+
+module.exports = router;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#-GET">- GET</a></li><li><a href="global.html#-POST">- POST</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sun Feb 23 2020 13:15:45 GMT+1100 (Australian Eastern Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
