@@ -8,6 +8,10 @@ const cors = require('cors');
 
 InitiateMongoServer();
 
+const Models = require("./model/User");
+const User = Models.user;
+// const User = require("./model/User");
+
 const app = express();
 
 const PORT = process.env.PORT || 3001;
@@ -15,7 +19,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 // app.use(bodyParser.json());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => {
   res.json({message: "API Working"});
@@ -39,8 +43,6 @@ const server = app.listen(PORT, (req, res) => {
   console.log(`Server is listening on PORT ${PORT}`);
 });
 
-let message = null;
-
 const io = require('socket.io')(server);
 
 //.of('/chatroom')
@@ -49,11 +51,15 @@ io.on('connection', socket => {
 
 
     socket.on('message', data => {
-      message = data.message;
+      const message = data.message;
+      const user = data.user;
+
       io.emit('all messages', {
-        message: message
-      });
-    });
+        message: message,
+        user: user
+      }); // io.emit('all messages')
+
+    }); // socket.on('message')
 
 
 
