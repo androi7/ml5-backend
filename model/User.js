@@ -56,8 +56,7 @@ const UserSchema = mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   password: {
     type: String,
@@ -69,7 +68,6 @@ const UserSchema = mongoose.Schema({
   //     online: Boolean,
   //     chat: [MessageSchema]
   // }],
-  chats: [ChatSchema],
   createdAt: {
     type: Date,
     default: Date.now()
