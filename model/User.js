@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const bcrypt = require("bcryptjs");
 
-const MessageSchema = mongoose.Schema({
+const messageSchema = mongoose.Schema({
   text: {
     type: String,
     required: true
@@ -21,7 +22,7 @@ const MessageSchema = mongoose.Schema({
   timestamps: true  // createdAt, updatedAt
 });
 
-MessageSchema.methods.getTime = () => {
+messageSchema.methods.getTime = () => {
   const currentTime = Math.floor(new Date() / 1000);
   const pastTime = Math.floor(this.createdAt / 1000);
   const elapsedTime = currentTime - pastTime;
@@ -40,7 +41,7 @@ MessageSchema.methods.getTime = () => {
   return output;
 };
 
-const ChatSchema = mongoose.Schema({
+const chatSchema = mongoose.Schema({
   participants: [{
     type: mongoose.Schema.Types.ObjectId, ref: 'User'
   }],
@@ -49,7 +50,7 @@ const ChatSchema = mongoose.Schema({
   }]
 });
 
-const UserSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
   username: {
     type: String,
     required: true
@@ -74,10 +75,16 @@ const UserSchema = mongoose.Schema({
   }
 });
 
-// module.exports = mongoose.model("User", UserSchema);
+// hash for seed files
+const saltRounds = 10;
+userSchema.pre('save', async function(next) {
+  this.password = await bcrypt.hash(this.password, saltRounds);
+  console.log('bycrypted', this.password);
+  next();
+});
 
 module.exports = {
-  user: mongoose.model("User", UserSchema),
-  message: mongoose.model("Message", MessageSchema),
-  chat: mongoose.model("Chat", ChatSchema)
+  user: mongoose.model("User", userSchema),
+  message: mongoose.model("Message", messageSchema),
+  chat: mongoose.model("Chat", chatSchema)
 };

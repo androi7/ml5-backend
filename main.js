@@ -2,7 +2,7 @@ const express = require('express');
 
 // const bodyParser = require('body-parser');
 const user = require("./routes/user");
-// const chat = require("./routes/chat");
+const chat = require("./routes/chat");
 const InitiateMongoServer = require('./config/db');
 const cors = require('cors');
 
@@ -33,6 +33,8 @@ app.get("/", (req, res) => {
 
 app.use("/user", user);
 // app.use("/chat", chat);
+
+app.use("/chat", chat);
 
 // Fallback route handler
 app.use((req, res) => {

@@ -175,7 +175,8 @@ router.post(
           res.status(200).json({
             token,
             username: user.username,
-            email: user.email
+            email: user.email,
+            id: user._id
           });
         }
       ); // jwt.sign()

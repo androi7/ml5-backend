@@ -13,29 +13,25 @@ Message.collection.drop();
 const user1 = new User({
   username: 'User1',
   email:    'user1@email.com',
-  password: 'Chicken1',
-  passwordConfirmation: 'Chicken1',
+  password: 'Chicken1'
 });
 
 const user2 = new User({
   username: 'User2',
   email:    'user2@email.com',
-  password: 'Chicken1',
-  passwordConfirmation: 'Chicken1',
+  password: 'Chicken1'
 });
 
 const user3 = new User({
   username: 'User3',
   email:    'user3@email.com',
-  password: 'Chicken1',
-  passwordConfirmation: 'Chicken1',
+  password: 'Chicken1'
 });
 
 const user4 = new User({
   username: 'User4',
   email:    'user4@email.com',
-  password: 'Chicken1',
-  passwordConfirmation: 'Chicken1',
+  password: 'Chicken1'
 });
 
 user1.save();
