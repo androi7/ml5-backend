@@ -1,8 +1,8 @@
 const express = require('express');
 const auth = require("../middleware/auth");
 
-const Models = require("../model/User");
-const User = Models.user;
+const models = require("../models/User");
+const User = models.user;©
 const router = express.Router();
 
 router.get('/participants', auth, async (req, res) => {

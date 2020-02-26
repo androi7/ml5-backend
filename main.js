@@ -1,6 +1,4 @@
 const express = require('express');
-
-// const bodyParser = require('body-parser');
 const user = require("./routes/user");
 const chat = require("./routes/chat");
 const InitiateMongoServer = require('./config/db');
@@ -8,21 +6,19 @@ const cors = require('cors');
 
 InitiateMongoServer();
 
-const Models = require("./model/User");
-const User = Models.user;
-// const User = require("./model/User");
+// const models = require("./models/User");
+// const User = models.user;
 
 const app = express();
 
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
-// app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => {
-  res.json({message: "API Working"});
+  res.json({message: "Welcome"});
 });
 
 /**
@@ -32,8 +28,6 @@ app.get("/", (req, res) => {
 */
 
 app.use("/user", user);
-// app.use("/chat", chat);
-
 app.use("/chat", chat);
 
 // Fallback route handler

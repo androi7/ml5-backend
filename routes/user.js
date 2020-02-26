@@ -6,8 +6,8 @@ const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 const router = express.Router();
 
-const Models = require("../model/User");
-const User = Models.user;
+const models = require("../models/User");
+const User = models.user;
 // const User = require("../model/User");
 
 // jsdoc
@@ -168,7 +168,7 @@ router.post(
         payload,
         "myPrivateKey",
         {
-          expiresIn: 3600
+          expiresIn: 60//3600
         },
         (err, token) => {
           if (err) throw err;
