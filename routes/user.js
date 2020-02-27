@@ -168,7 +168,7 @@ router.post(
         payload,
         "myPrivateKey",
         {
-          expiresIn: 60//3600
+          expiresIn: 3600
         },
         (err, token) => {
           if (err) throw err;
