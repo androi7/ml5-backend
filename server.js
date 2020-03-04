@@ -48,30 +48,45 @@ server.listen(PORT, (req, res) => {
 });
 
 const io = require('socket.io')(server);
+app.set('io', io);
+
+// io.on('connection', socket => {
+//
+//     socket.on('message', data => {
+//       const message = data.message;
+//       const user = data.user;
+//
+//       io.emit('all messages', {
+//         message: message,
+//         user: user
+//       }); // io.emit('all messages')
+//     }); // socket.on('message')
+//
+//     socket.emit('request', {
+//       welcome: `Welcome`
+//     });  // emit an event to the socket
+//
+//     // io.emit('welcome', {
+//     //   newUser: 'joined!'
+//     // }
+//     // );
+//
+//     // io.emit('joined', { // emit an event to all connected sockets, broadcast
+//     //   content: `User ${user.username} joined the chat.`,
+//     // });
+//
+// });
 
 io.on('connection', socket => {
-
     socket.on('message', data => {
       const message = data.message;
       const user = data.user;
+      console.log('message when receiving on server:', message);
 
+      //socket.broadcast
       io.emit('all messages', {
         message: message,
         user: user
       }); // io.emit('all messages')
     }); // socket.on('message')
-
-    socket.emit('request', {
-      welcome: `Welcome`
-    });  // emit an event to the socket
-
-    // io.emit('welcome', {
-    //   newUser: 'joined!'
-    // }
-    // );
-
-    // io.emit('joined', { // emit an event to all connected sockets, broadcast
-    //   content: `User ${user.username} joined the chat.`,
-    // });
-
 });
