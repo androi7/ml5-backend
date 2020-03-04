@@ -1,10 +1,14 @@
 const InitiateMongoServer = require('./config/db');
 InitiateMongoServer();
 
-const Models = require('./model/User');
-const User = Models.user;
-const Chat = Models.chat;
-const Message = Models.message;
+const models = require("./models/User");
+const User = models.user;
+const Chat = models.chat;
+const Message = models.message;
+// const Models = require('./model/User');
+// const User = Models.user;
+// const Chat = Models.chat;
+// const Message = Models.message;
 
 User.collection.drop();
 Chat.collection.drop();

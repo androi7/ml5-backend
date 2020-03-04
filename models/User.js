@@ -43,10 +43,12 @@ messageSchema.methods.getTime = () => {
 
 const chatSchema = mongoose.Schema({
   participants: [{
-    type: mongoose.Schema.Types.ObjectId, ref: 'User'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }],
   messages: [{
-    type: mongoose.Schema.Types.ObjectId, ref: 'Message'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Message'
   }]
 });
 
@@ -63,6 +65,11 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  images: [
+    {
+      type: String,
+    }
+  ],
   // friends: [{
   //     name: String,
   //     id: mongoose.Schema.Types.ObjectId,

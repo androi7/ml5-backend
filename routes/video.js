@@ -3,6 +3,7 @@ const auth = require("../middleware/auth");
 const cloudinary = require('cloudinary');
 // middleware for parsing uploaded files
 const multipart = require('connect-multiparty');
+const saveImage = require('../middleware/saveImage');
 
 const models = require("../models/User");
 const User = models.user;
@@ -17,21 +18,35 @@ cloudinary.config({
 // Setup multiparty
 const multipartMiddleware = multipart();
 
-router.post('/upload', multipartMiddleware, async (req, res) => {
+router.post('/upload', [auth, multipartMiddleware, saveImage], async (req, res) => {
   try{
-    // Upload image to cloudinary
-    await cloudinary.v2.uploader.upload(req.body.file, {}, function(
-      error,
-      result
-    ) {
-      if (error) {
-        return res.status(500).send(error);
+    // save image name to DB for fetching later
+    await User.findOneAndUpdate(
+      { _id: req.user.id },
+      { $push: {
+          images: req.image
+        }
       }
-
-      res.json(result);
-    });
+    );
   } catch(err) {
     console.error('Failed upload to cloudinary:', err);
+  }
+});
+
+
+router.get('/images', auth, async (req, res) => { // /:page
+  try {
+    const user = await User.findById(req.user.id);
+    // const { page } = req.params;
+    // const imagesPerPage = 10;
+    // if (user.images.length > 0) {
+    //   const images = user.images.sort().slice((page - 1) * imagesPerPage, page * (imagesPerPage - 1));
+    // }
+    const images = user.images;
+    res.json(images);
+  } catch(err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server Error' });
   }
 });
 
