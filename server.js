@@ -89,6 +89,7 @@ io.on('connection', socket => {
         image = data.image;
         message = '';
       }
+      console.log('message', message, 'image', image);
 
       //socket.broadcast
       io.emit('all messages', {
@@ -99,13 +100,13 @@ io.on('connection', socket => {
       }); // io.emit('all messages')
     }); // socket.on('message')
 
-    socket.on('image', data => {
-      const img = data.image;
-      const user = data.user;
-
-      io.emit('all images', {
-        image: img,
-        user
-      });
-    })
+    // socket.on('image', data => {
+    //   const img = data.image;
+    //   const user = data.user;
+    //
+    //   io.emit('all images', {
+    //     image: img,
+    //     user
+    //   });
+    // })
 });
