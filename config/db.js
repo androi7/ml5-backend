@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const MONGO_URI = "mongodb://127.0.0.1:27017/node-auth"
+const MONGO_URI = "mongodb+srv://admin1:admin1234@cluster0-ozbil.mongodb.net/test?retryWrites=true&w=majority"
 
 const InitiateMongoServer = async () => {
   try {

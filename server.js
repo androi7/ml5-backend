@@ -17,7 +17,7 @@ InitiateMongoServer();
 const app = express();
 const server = require('http').Server(app);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json({limit: '10mb', extended: true}));
