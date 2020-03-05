@@ -37,7 +37,7 @@ router.post('/public', auth,  async (req, res) => {
             user: user
           }); // io.emit('all messages')
         }); // socket.on('message')
-
+        
         socket.emit('welcome', {
           message: `Welcome ${req.user.username}`,
           user: req.user.username

@@ -79,14 +79,33 @@ app.set('io', io);
 
 io.on('connection', socket => {
     socket.on('message', data => {
-      const message = data.message;
+
       const user = data.user;
-      console.log('message when receiving on server:', message);
+      let message, image;
+      if (data.type === 'txt') {
+        message = data.message;
+        image = '';
+      } else if (data.type === 'img') {
+        image = data.image;
+        message = '';
+      }
 
       //socket.broadcast
       io.emit('all messages', {
-        message: message,
-        user: user
+        type: data.type,
+        message,
+        image,
+        user
       }); // io.emit('all messages')
     }); // socket.on('message')
+
+    socket.on('image', data => {
+      const img = data.image;
+      const user = data.user;
+
+      io.emit('all images', {
+        image: img,
+        user
+      });
+    })
 });
